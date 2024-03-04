@@ -2,7 +2,6 @@
 
 namespace App\Filament\Resources;
 
-use Filament\Forms;
 use App\Models\Post;
 use Filament\Tables;
 use Filament\Forms\Set;
@@ -16,12 +15,14 @@ use Filament\Forms\Components\Toggle;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Forms\Components\TextInput;
+use Filament\Tables\Columns\ImageColumn;
 use Filament\Forms\Components\RichEditor;
 use Filament\Tables\Columns\ToggleColumn;
-use Illuminate\Database\Eloquent\Builder;
+use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use App\Filament\Resources\PostResource\Pages;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use App\Filament\Resources\PostResource\RelationManagers;
+use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
+
+
 
 class PostResource extends Resource
 {
@@ -39,8 +40,8 @@ class PostResource extends Resource
                     TextInput::make('title')
                         ->live()
                         ->afterStateUpdated(fn (Set $set, ?string $state) => $set('slug', Str::slug($state)))->required(),
-
                     TextInput::make('slug')->required(),
+                    SpatieMediaLibraryFileUpload::make('cover'),
                     RichEditor::make('content'),
                     Toggle::make('status'),
                 ])
@@ -63,6 +64,7 @@ class PostResource extends Resource
                 ),
                 TextColumn::make('title')->limit('50')->sortable(),
                 TextColumn::make('category.name'),
+                SpatieMediaLibraryImageColumn::make('cover'),
                 ToggleColumn::make('status'),
             ])
             ->filters([
