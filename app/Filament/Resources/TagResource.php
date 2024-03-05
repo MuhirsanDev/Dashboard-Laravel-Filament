@@ -14,7 +14,6 @@ use Filament\Resources\Resource;
 use Filament\Forms\Components\Card;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Contracts\HasTable;
-
 use Filament\Forms\Components\TextInput;
 use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\TagResource\Pages;
@@ -24,6 +23,8 @@ use App\Filament\Resources\TagResource\RelationManagers;
 class TagResource extends Resource
 {
     protected static ?string $model = Tag::class;
+
+    protected static ?string $recordTitleAttribute = 'name';
 
     protected static ?string $navigationIcon = 'heroicon-o-tag';
 
