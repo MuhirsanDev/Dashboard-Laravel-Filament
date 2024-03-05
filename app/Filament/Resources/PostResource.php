@@ -22,7 +22,9 @@ use Filament\Tables\Columns\ToggleColumn;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use App\Filament\Resources\PostResource\Pages;
 use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
-
+use Filament\Tables\Filters\Filter;
+use Illuminate\Database\Eloquent\Builder;
+use Filament\Tables\Filters\SelectFilter;
 
 
 class PostResource extends Resource
@@ -63,13 +65,18 @@ class PostResource extends Resource
                         );
                     }
                 ),
-                TextColumn::make('title')->limit('50')->sortable(),
+                TextColumn::make('title')->limit('50')->sortable()->searchable(),
                 TextColumn::make('category.name'),
                 SpatieMediaLibraryImageColumn::make('cover'),
                 ToggleColumn::make('status'),
             ])
             ->filters([
-                //
+                Filter::make('publish')
+                    ->query(fn (Builder $query): Builder => $query->where('status', true)),
+                Filter::make('draft')
+                    ->query(fn (Builder $query): Builder => $query->where('status', false)),
+                SelectFilter::make('Category')
+                    ->relationship('category', 'name')
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
