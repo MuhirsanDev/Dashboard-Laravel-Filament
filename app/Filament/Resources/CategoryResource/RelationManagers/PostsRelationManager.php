@@ -1,44 +1,50 @@
 <?php
 
-namespace App\Filament\Resources;
+namespace App\Filament\Resources\CategoryResource\RelationManagers;
 
-
+use Filament\Forms;
 use Filament\Tables;
 use Filament\Forms\Set;
-use App\Models\Category;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
-use Filament\Resources\Resource;
 use Filament\Forms\Components\Card;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Toggle;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Forms\Components\TextInput;
-use App\Filament\Resources\CategoryResource\Pages;
-use App\Filament\Resources\CategoryResource\RelationManagers\PostsRelationManager;
+use Filament\Forms\Components\RichEditor;
+use Filament\Tables\Columns\ToggleColumn;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Resources\RelationManagers\RelationManager;
+use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
+use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 
-
-class CategoryResource extends Resource
+class PostsRelationManager extends RelationManager
 {
-    protected static ?string $model = Category::class;
+    protected static string $relationship = 'posts';
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-
-    public static function form(Form $form): Form
+    public function form(Form $form): Form
     {
         return $form
             ->schema([
                 Card::make()->schema([
-                    TextInput::make('name')
+                    Select::make('category_id')
+                        ->relationship('category', 'name'),
+                    TextInput::make('title')
                         ->live()
                         ->afterStateUpdated(fn (Set $set, ?string $state) => $set('slug', Str::slug($state)))->required(),
-
                     TextInput::make('slug')->required(),
+                    SpatieMediaLibraryFileUpload::make('cover'),
+                    RichEditor::make('content'),
+                    Toggle::make('status'),
                 ])
             ]);
     }
 
-    public static function table(Table $table): Table
+    public function table(Table $table): Table
     {
         return $table
             ->columns([
@@ -52,35 +58,25 @@ class CategoryResource extends Resource
                         );
                     }
                 ),
-                TextColumn::make('name')->limit('50')->sortable(),
-                TextColumn::make('slug')->limit('50'),
+                TextColumn::make('title')->limit('50')->sortable(),
+                TextColumn::make('category.name'),
+                SpatieMediaLibraryImageColumn::make('cover'),
+                ToggleColumn::make('status'),
             ])
             ->filters([
                 //
             ])
+            ->headerActions([
+                Tables\Actions\CreateAction::make(),
+            ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
-    }
-
-    public static function getRelations(): array
-    {
-        return [
-            PostsRelationManager::class
-        ];
-    }
-
-    public static function getPages(): array
-    {
-        return [
-            'index' => Pages\ListCategories::route('/'),
-            'create' => Pages\CreateCategory::route('/create'),
-            'edit' => Pages\EditCategory::route('/{record}/edit'),
-        ];
     }
 }

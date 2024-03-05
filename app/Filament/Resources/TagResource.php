@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Resources\CategoryResource\RelationManagers\PostsRelationManager;
 use App\Models\Tag;
 use Filament\Forms;
 use Filament\Tables;
@@ -72,7 +73,7 @@ class TagResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            PostsRelationManager::class,
         ];
     }
 
