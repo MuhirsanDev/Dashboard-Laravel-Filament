@@ -11,6 +11,7 @@ use Filament\Resources\Resource;
 use Filament\Resources\Pages\Page;
 use Filament\Forms\Components\Card;
 use Illuminate\Support\Facades\Hash;
+use Filament\Forms\Components\Select;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Forms\Components\TextInput;
@@ -56,7 +57,11 @@ class UserResource extends Resource
                         ->label('Password Confirmation')
                         ->required(fn (Page $livewire): bool => $livewire instanceof CreateRecord)
                         ->minLength(8)
-                        ->dehydrated(false)
+                        ->dehydrated(false),
+
+                    Select::make('roles')
+                        ->multiple()
+                        ->relationship('roles', 'name')->preload(),
                 ])
             ]);
     }
@@ -77,6 +82,7 @@ class UserResource extends Resource
                 ),
                 TextColumn::make('name')->limit('50')->sortable(),
                 TextColumn::make('email')->limit('50')->searchable(),
+                TextColumn::make('roles.name'),
             ])
             ->filters([
                 //
