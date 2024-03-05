@@ -26,10 +26,10 @@ class DatabaseSeeder extends Seeder
             'email' => 'edit@example.com',
         ]);
 
-        $role = Role::create(['name' => 'admin']);
+        $role = Role::create(['name' => 'ADMIN']);
         $user1->assignRole($role);
 
-        $role = Role::create(['name' => 'editing']);
+        $role = Role::create(['name' => 'EDITOR']);
         $user2->assignRole($role);
     }
 }

@@ -2,11 +2,12 @@
 
 namespace App\Providers;
 
-use App\Filament\Resources\UserResource;
+use App\Models\User;
 use Filament\Facades\Filament;
 use Filament\Navigation\MenuItem;
 use Filament\Navigation\UserMenuItem;
 use Illuminate\Support\ServiceProvider;
+use App\Filament\Resources\UserResource;
 
 class FilamentServiceProvider extends ServiceProvider
 {
@@ -21,15 +22,17 @@ class FilamentServiceProvider extends ServiceProvider
     /**
      * Bootstrap services.
      */
-    public function boot(): void
+    public function boot(User $user): void
     {
-        Filament::serving(function () {
-            Filament::registerUserMenuItems([
-                MenuItem::make()
-                    ->label('Settings')
-                    ->url(UserResource::getUrl())
-                    ->icon('heroicon-o-cog-6-tooth'),
-            ]);
-        });
+        if ($user->hasRole('ADMIN', 'SUPER ADMIN')) {
+            Filament::serving(function () {
+                Filament::registerUserMenuItems([
+                    MenuItem::make()
+                        ->label('Settings')
+                        ->url(UserResource::getUrl())
+                        ->icon('heroicon-o-cog-6-tooth'),
+                ]);
+            });
+        }
     }
 }
