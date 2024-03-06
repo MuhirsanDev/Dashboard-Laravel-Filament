@@ -17,19 +17,19 @@ class DatabaseSeeder extends Seeder
         // \App\Models\User::factory(10)->create();
 
         $user1 = User::factory()->create([
-            'name' => 'Admin Test',
+            'name' => 'AdminTest',
             'email' => 'admintest@example.com',
         ]);
 
         $user2 = User::factory()->create([
-            'name' => 'Editing',
+            'name' => 'Editor',
             'email' => 'edit@example.com',
         ]);
 
-        $role = Role::create(['name' => 'ADMIN']);
+        $role = Role::create(['name' => 'admin']);
         $user1->assignRole($role);
 
-        $role = Role::create(['name' => 'EDITOR']);
+        $role = Role::create(['name' => 'editor']);
         $user2->assignRole($role);
     }
 }
