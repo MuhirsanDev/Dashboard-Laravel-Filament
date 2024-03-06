@@ -10,6 +10,7 @@ use Filament\Tables\Table;
 use Filament\Resources\Resource;
 use Filament\Resources\Pages\Page;
 use Filament\Forms\Components\Card;
+use Filament\Tables\Actions\Action;
 use Illuminate\Support\Facades\Hash;
 use Filament\Forms\Components\Select;
 use Filament\Tables\Columns\TextColumn;
@@ -88,7 +89,11 @@ class UserResource extends Resource
                 //
             ])
             ->actions([
+                Action::make('show')
+                    ->url(fn (User $record) => 'users/show/' . $record->id)
+                    ->icon('heroicon-o-eye'),
                 Tables\Actions\EditAction::make(),
+
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -110,6 +115,7 @@ class UserResource extends Resource
             'index' => Pages\ListUsers::route('/'),
             'create' => Pages\CreateUser::route('/create'),
             'edit' => Pages\EditUser::route('/{record}/edit'),
+            'show' => Pages\ShowUsers::route('/show/{id}')
         ];
     }
 }
