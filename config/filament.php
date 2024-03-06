@@ -14,6 +14,12 @@ return [
     |
     */
 
+    'database_notifications' => [
+        'enabled' => true,
+        'poling_interval' => '30s'
+    ],
+
+
     'broadcasting' => [
 
         // 'echo' => [
