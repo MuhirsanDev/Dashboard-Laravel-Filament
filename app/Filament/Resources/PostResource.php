@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use Carbon\Carbon;
 use App\Models\Post;
 use Filament\Tables;
 use Filament\Forms\Set;
@@ -14,10 +15,11 @@ use Filament\Tables\Actions\Action;
 use Filament\Tables\Filters\Filter;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Toggle;
+use Filament\Tables\Filters\Indicator;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Forms\Components\TextInput;
-use Filament\Tables\Columns\ImageColumn;
+use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\RichEditor;
 use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Filters\SelectFilter;
@@ -80,7 +82,40 @@ class PostResource extends Resource
                 Filter::make('draft')
                     ->query(fn (Builder $query): Builder => $query->where('status', false)),
                 SelectFilter::make('Category')
-                    ->relationship('category', 'name')
+                    ->relationship('category', 'name'),
+
+                Filter::make('created_at')
+                    ->form([
+                        DatePicker::make('From'),
+                        DatePicker::make('To'),
+                    ])
+
+                    ->indicateUsing(function (array $data): array {
+                        $indicators = [];
+
+                        if ($data['From'] ?? null) {
+                            $indicators[] = Indicator::make('Created from ' . Carbon::parse($data['From'])->toFormattedDateString())
+                                ->removeField('From');
+                        }
+
+                        if ($data['To'] ?? null) {
+                            $indicators[] = Indicator::make('Created to ' . Carbon::parse($data['To'])->toFormattedDateString())
+                                ->removeField('To');
+                        }
+
+                        return $indicators;
+                    })
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['From'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
+                            )
+                            ->when(
+                                $data['To'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
+                            );
+                    })
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
