@@ -29,7 +29,7 @@ use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use App\Filament\Resources\PostResource\Widgets\StatsOverview;
 use Malzariey\FilamentDaterangepickerFilter\Filters\DateRangeFilter;
 use App\Filament\Resources\TagsRelationManagerResource\RelationManagers\TagsRelationManager;
-
+use Filament\Forms\Components\Hidden;
 
 class PostResource extends Resource
 {
@@ -63,6 +63,8 @@ class PostResource extends Resource
                     SpatieMediaLibraryFileUpload::make('cover'),
                     RichEditor::make('content'),
                     Toggle::make('status'),
+                    Hidden::make('users_id')
+                        ->default(auth()->user()->id),
                 ])
             ]);
     }
