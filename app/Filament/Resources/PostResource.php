@@ -19,7 +19,6 @@ use Filament\Tables\Filters\Indicator;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\RichEditor;
 use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Filters\SelectFilter;
@@ -28,6 +27,7 @@ use App\Filament\Resources\PostResource\Pages;
 use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use App\Filament\Resources\PostResource\Widgets\StatsOverview;
+use Malzariey\FilamentDaterangepickerFilter\Filters\DateRangeFilter;
 use App\Filament\Resources\TagsRelationManagerResource\RelationManagers\TagsRelationManager;
 
 
@@ -38,6 +38,16 @@ class PostResource extends Resource
     protected static ?string $recordTitleAttribute = 'title';
 
     protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-list';
+
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::where('status', true)->count();
+    }
+
+    public static function getNavigationBadgeColor(): ?string
+    {
+        return static::getModel()::where('status', true)->count() < 3 ? 'danger' : 'primary';
+    }
 
     public static function form(Form $form): Form
     {
@@ -84,38 +94,42 @@ class PostResource extends Resource
                 SelectFilter::make('Category')
                     ->relationship('category', 'name'),
 
-                Filter::make('created_at')
-                    ->form([
-                        DatePicker::make('From'),
-                        DatePicker::make('To'),
-                    ])
+                DateRangeFilter::make('created_at')
+                    ->withIndicator(),
 
-                    ->indicateUsing(function (array $data): array {
-                        $indicators = [];
 
-                        if ($data['From'] ?? null) {
-                            $indicators[] = Indicator::make('Created from ' . Carbon::parse($data['From'])->toFormattedDateString())
-                                ->removeField('From');
-                        }
+                // Filter::make('created_at')
+                //     ->form([
+                //         DatePicker::make('From'),
+                //         DatePicker::make('To'),
+                //     ])
 
-                        if ($data['To'] ?? null) {
-                            $indicators[] = Indicator::make('Created to ' . Carbon::parse($data['To'])->toFormattedDateString())
-                                ->removeField('To');
-                        }
+                //     ->indicateUsing(function (array $data): array {
+                //         $indicators = [];
 
-                        return $indicators;
-                    })
-                    ->query(function (Builder $query, array $data): Builder {
-                        return $query
-                            ->when(
-                                $data['From'],
-                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
-                            )
-                            ->when(
-                                $data['To'],
-                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
-                            );
-                    })
+                //         if ($data['From'] ?? null) {
+                //             $indicators[] = Indicator::make('Created from ' . Carbon::parse($data['From'])->toFormattedDateString())
+                //                 ->removeField('From');
+                //         }
+
+                //         if ($data['To'] ?? null) {
+                //             $indicators[] = Indicator::make('Created to ' . Carbon::parse($data['To'])->toFormattedDateString())
+                //                 ->removeField('To');
+                //         }
+
+                //         return $indicators;
+                //     })
+                //     ->query(function (Builder $query, array $data): Builder {
+                //         return $query
+                //             ->when(
+                //                 $data['From'],
+                //                 fn (Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
+                //             )
+                //             ->when(
+                //                 $data['To'],
+                //                 fn (Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
+                //      );
+                // })
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
