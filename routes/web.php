@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DownloadController;
+use App\Livewire\Form;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,8 +15,11 @@ use App\Http\Controllers\DownloadController;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+// Route::get('/', function () {
+//     return view('welcome');
+// });
+
+Route::get('/', Form::class);
+Route::get('/completed', [Form::class, 'completed']);
 
 Route::get('downloadimage/{record}', [DownloadController::class, 'download'])->name('download.image');
