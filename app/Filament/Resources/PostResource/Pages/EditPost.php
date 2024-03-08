@@ -10,10 +10,17 @@ class EditPost extends EditRecord
 {
     protected static string $resource = PostResource::class;
 
+    protected $listeners = ['refresh' => 'refreshForm'];
+
     protected function getHeaderActions(): array
     {
         return [
             Actions\DeleteAction::make(),
         ];
+    }
+
+    public function refreshForm()
+    {
+        $this->fillForm();
     }
 }

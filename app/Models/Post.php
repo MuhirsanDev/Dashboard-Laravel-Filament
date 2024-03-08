@@ -30,4 +30,9 @@ class Post extends Model implements HasMedia
     {
         return $this->belongsToMany(Tag::class);
     }
+
+    public function comments()
+    {
+        return $this->hasMany(Comment::class, 'posts_id', 'id');
+    }
 }

@@ -24,6 +24,7 @@ use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\PostResource\Pages;
+use App\Filament\Resources\PostResource\RelationManagers\CommentsRelationManager;
 use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use App\Filament\Resources\PostResource\Widgets\StatsOverview;
@@ -65,6 +66,9 @@ class PostResource extends Resource
                     Toggle::make('status'),
                     Hidden::make('users_id')
                         ->default(auth()->user()->id),
+                    TextInput::make('totsl_comment')
+                        ->reactive()
+                        ->disabled()
                 ])
             ]);
     }
@@ -152,6 +156,7 @@ class PostResource extends Resource
     {
         return [
             TagsRelationManager::class,
+            CommentsRelationManager::class,
         ];
     }
 
