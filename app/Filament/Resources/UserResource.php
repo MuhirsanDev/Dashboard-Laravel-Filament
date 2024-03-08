@@ -115,7 +115,8 @@ class UserResource extends Resource
             'index' => Pages\ListUsers::route('/'),
             'create' => Pages\CreateUser::route('/create'),
             'edit' => Pages\EditUser::route('/{record}/edit'),
-            'show' => Pages\ShowUsers::route('/show/{id}')
+            'show' => Pages\ShowUsers::route('/show/{id}'),
+            'activities' => Pages\ListUserActivities::route('/{record}/activites'),
         ];
     }
 }
