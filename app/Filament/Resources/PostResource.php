@@ -32,6 +32,7 @@ use App\Filament\Resources\PostResource\Widgets\StatsOverview;
 use Malzariey\FilamentDaterangepickerFilter\Filters\DateRangeFilter;
 use App\Filament\Resources\PostResource\RelationManagers\CommentsRelationManager;
 use App\Filament\Resources\TagsRelationManagerResource\RelationManagers\TagsRelationManager;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class PostResource extends Resource
 {
@@ -94,6 +95,7 @@ class PostResource extends Resource
                 ToggleColumn::make('status'),
             ])
             ->filters([
+                Tables\Filters\TrashedFilter::make(),
                 Filter::make('publish')
                     ->query(fn (Builder $query): Builder => $query->where('status', true)),
                 Filter::make('draft')
@@ -145,10 +147,15 @@ class PostResource extends Resource
                     ->color('info')
                     ->url(fn (Post $record) => route('download.image', $record))
                     ->openUrlInNewTab(),
+                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\ForceDeleteAction::make(),
+                Tables\Actions\RestoreAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\ForceDeleteBulkAction::make(),
+                    Tables\Actions\RestoreBulkAction::make(),
                 ]),
             ]);
     }
@@ -159,6 +166,14 @@ class PostResource extends Resource
             TagsRelationManager::class,
             CommentsRelationManager::class,
         ];
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->withoutGlobalScopes([
+                SoftDeletingScope::class,
+            ]);
     }
 
     public static function getPages(): array
